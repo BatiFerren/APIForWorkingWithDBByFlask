@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistics by {{ name_operator }}</title>
+</head>
+<body>
+<h1>Statistics by operator {{ name_operator }}</h1>
+<table border="1px">
+    <thead bgcolor="#ccc">
+        <tr>
+            {% for head in header_table %}
+            <td>{{ head }}</td>
+            {% endfor %}
+        </tr>
+    </thead>
+   <tbody>
+       {% for item in stat_list %}
+        <tr>
+            {% for inner_item in item %}
+            <td>{{ inner_item }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+   </tbody>
+</table>
+</body>
+</html>

@@ -1,5 +1,11 @@
 import csv
 import sqlite3
+from flask import Flask, request, render_template
+app = Flask(__name__)
+
+@app.route('/api_v1/')
+def hello_world():
+    return request.args.get("operator")
 
 
 def connect_db(name_db):
@@ -31,10 +37,11 @@ def read_csv_and_write_to_db(file_obj, con):
                 cur.execute("INSERT INTO tests_results (Device_type, Operator, Time, Success) VALUES(?, ?, ?, ?);", row)
                 con.commit()
 
-
+@app.route('/api_v1/stat')
 def create_operator_db():
-    print("Type the operator name: ")
-    operator = input()
+    #print("Type the operator name: ")
+    #operator = input()
+    operator = request.args.get("operator")
     nameDB = operator + '_statistic.db'
     name_table = operator + '_statistic_table'
     connect = sqlite3.connect(nameDB)
@@ -70,7 +77,12 @@ def create_operator_db():
 
     cur.executemany(sql_add_by_operator, result_list)
     connect.commit()
+    connect.close()
+    main_connect.close()
 
+    header_list = ['Device type', 'All tests', 'Success tests', 'Unuccess tests']
+
+    return render_template('stat.html', name_operator = operator, header_table = header_list, stat_list = result_list)
 
 
 def main():
@@ -81,7 +93,5 @@ def main():
     create_operator_db()
 
 
-
-
 if __name__ == '__main__':
-    main()
+    app.run()
