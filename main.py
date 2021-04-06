@@ -39,8 +39,6 @@ def read_csv_and_write_to_db(file_obj, con):
 
 @app.route('/api_v1/stat')
 def create_operator_db():
-    #print("Type the operator name: ")
-    #operator = input()
     operator = request.args.get("operator")
     nameDB = operator + '_statistic.db'
     name_table = operator + '_statistic_table'
@@ -77,7 +75,9 @@ def create_operator_db():
 
     cur.executemany(sql_add_by_operator, result_list)
     connect.commit()
+    cur.close()
     connect.close()
+    main_cursor.close()
     main_connect.close()
 
     header_list = ['Device type', 'All tests', 'Success tests', 'Unuccess tests']
@@ -85,13 +85,27 @@ def create_operator_db():
     return render_template('stat.html', name_operator = operator, header_table = header_list, stat_list = result_list)
 
 
+@app.route('/api_v1/test_result/<delete_id>')
+def delete_test(delete_id):
+    main_connect = connect_db('tests.db')
+    main_cursor = main_connect.cursor()
+    delete_sql = '''DELETE FROM tests_results WHERE id=''' + delete_id
+    main_cursor.execute(delete_sql)
+    main_connect.commit()
+    main_cursor.close()
+    main_connect.close()
+    return 'Deleted test id # %s' % delete_id
+
+
 def main():
     file_obj = 'test_results.csv'
     my_con = connect_db('tests.db')
     create_table('tests_results', my_con)
     #read_csv_and_write_to_db(file_obj, my_con)
-    create_operator_db()
+    #create_operator_db()
+    delete_test()
 
 
 if __name__ == '__main__':
     app.run()
+    #main()
