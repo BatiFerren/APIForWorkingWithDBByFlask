@@ -1,0 +1,9 @@
+.idea/
+Emily_statistic.db
+Jack_statistic.db
+Lib/
+Scripts/
+tests.db
+pyvenv.cfg
+
+
