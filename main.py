@@ -2,11 +2,9 @@ import csv
 import sqlite3
 import datetime
 from flask import Flask, request, render_template
-app = Flask(__name__)
 
-@app.route('/api_v1/')
-def hello_world():
-    return request.args.get("operator")
+
+app = Flask(__name__)
 
 
 def connect_db(name_db):
@@ -21,13 +19,6 @@ def create_table(name_table, connect):
     connect.commit
 
 
-def read_csv_as_dict(file_obj):
-    with open(file_obj, newline='') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            print(row.keys())
-
-
 def read_csv_and_write_to_db(file_obj, con):
     with open(file_obj, newline='') as f:
         reader = csv.reader(f)
@@ -38,8 +29,11 @@ def read_csv_and_write_to_db(file_obj, con):
                 cur.execute("INSERT INTO tests_results (Device_type, Operator, Time, Success) VALUES(?, ?, ?, ?);", row)
                 con.commit()
 
+
 @app.route('/api_v1/stat')
 def create_operator_db():
+    #print("Type the name of the Operator:")
+    #operator = input()
     operator = request.args.get("operator")
     nameDB = operator + '_statistic.db'
     name_table = operator + '_statistic_table'
@@ -53,7 +47,7 @@ def create_operator_db():
     main_cursor = main_connect.cursor()
     all_select_sql = '''SELECT Device_type, COUNT(*) as All_tests FROM tests_results WHERE Operator = \'''' + operator + '''\' GROUP BY Device_type'''
     success_select_sql = '''SELECT Device_type, COUNT(*) as Success_tests FROM tests_results WHERE Operator = \'''' + operator + '''\' AND Success = 1 GROUP BY Device_type'''
-    unsuccess_select_sql = '''SELECT Device_type, COUNT(*) as Unuccess_tests FROM tests_results WHERE Operator = \'''' + operator + '''\' AND Success = 0 GROUP BY Device_type'''
+    unsuccess_select_sql = '''SELECT Device_type, COUNT(*) as Unsuccess_tests FROM tests_results WHERE Operator = \'''' + operator + '''\' AND Success = 0 GROUP BY Device_type'''
     add_list = main_cursor.execute(all_select_sql).fetchall()
 
     dev_type_list = []
@@ -81,7 +75,7 @@ def create_operator_db():
     main_cursor.close()
     main_connect.close()
 
-    header_list = ['Device type', 'All tests', 'Success tests', 'Unuccess tests']
+    header_list = ['Device type', 'All tests', 'Success tests', 'Unsuccess tests']
 
     return render_template('stat.html', name_operator = operator, header_table = header_list, stat_list = result_list)
 
@@ -125,9 +119,25 @@ def main():
     create_table('tests_results', my_con)
     #read_csv_and_write_to_db(file_obj, my_con)
     #create_operator_db()
-    delete_test()
 
 
 if __name__ == '__main__':
-    app.run()
+
+    #For run script without Flask interface uncomment main() and comment app.run()
+
+    # For creating db and insert data from csv-file you have to uncomment
+    #   read_csv_and_write_to_db(file_obj, my_con)
+    # in main function (It has to be executed only once)
+
+    # For get statistics by operator you have to uncomment
+    #   print("Type the name of the Operator:")
+    #   operator = input()
+    # in create_operator_db() function
+    # and comment
+    #   operator = request.args.get("operator")
+    # and uncomment create_operator_db() in main function
+
     #main()
+
+    #For run Flask interface you have to uncomment app.run() and comment main()
+    app.run()
