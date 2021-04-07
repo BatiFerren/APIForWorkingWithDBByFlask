@@ -39,6 +39,10 @@ def create_operator_db():
     name_table = operator + '_statistic_table'
     connect = sqlite3.connect(nameDB)
     cur = connect.cursor()
+    sql_delete = '''DROP TABLE IF EXISTS ''' + name_table
+    cur.execute(sql_delete)
+    connect.commit()
+
     sql = '''CREATE TABLE IF NOT EXISTS ''' + name_table + ''' (Device_type text, All_tests int, 
                                                                 Success_tests int, Unsuccess_tests int)'''
     cur.execute(sql)
