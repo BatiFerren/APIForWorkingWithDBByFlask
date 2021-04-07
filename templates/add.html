@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adding TEST</title>
+</head>
+<body>
+<h1>Add test</h1>
+<form action="/api_v1/test_result" method="post" id="test_data">
+    <p><label for="dev_type">Device type:</label><input type="text" name="dev_type" id="dev_type"></p>
+    <p><label for="operator">Operator:</label><input type="text" name="operator" id="operator"></p>
+    <p><label for="success">Success:</label>
+        <select name="success" id="success">
+            <option value="0">0</option>
+            <option value="1">1</option>
+        </select>
+    </p>
+    <p><input type="submit" value="Add"></p>
+</form>
+</body>
+</html>

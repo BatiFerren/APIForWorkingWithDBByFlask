@@ -1,5 +1,6 @@
 import csv
 import sqlite3
+import datetime
 from flask import Flask, request, render_template
 app = Flask(__name__)
 
@@ -95,6 +96,27 @@ def delete_test(delete_id):
     main_cursor.close()
     main_connect.close()
     return 'Deleted test id # %s' % delete_id
+
+
+@app.route('/api_v1/test_result', methods=['POST', 'GET'])
+def add_test():
+    if request.method == 'POST':
+        main_connect = connect_db('tests.db')
+        main_cursor = main_connect.cursor()
+
+        insert_list = []
+        insert_list.append(request.form['dev_type'])
+        insert_list.append(request.form['operator'])
+        datetime_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        insert_list.append(datetime_now)
+        insert_list.append(request.form['success'])
+
+        insert_sql = '''INSERT INTO tests_results (Device_type, Operator, Time, Success) VALUES(?, ?, ?, ?);'''
+        main_cursor.execute(insert_sql, insert_list)
+        main_connect.commit()
+        main_cursor.close()
+        main_connect.close()
+    return render_template('add.html')
 
 
 def main():
