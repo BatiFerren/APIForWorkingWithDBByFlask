@@ -1,3 +1,3 @@
-# APIForWorckingWithCSV
+# APIForWorkingWithDBByFlask
 
 Created by Vladimir Murashko
